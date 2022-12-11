@@ -19,17 +19,12 @@ def encrypt_func(txt):
 def udp_server(host=HOST, port=PORT):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind((host, port))
-    try:
+    while True:
         data, addr = sock.recvfrom(4096)
-        if data:
-            print(data)
-            decode_data = data.decode('utf-8')
-            cesar_data = encrypt_func(decode_data)
-            sock.sendto((bytes(cesar_data, encoding='utf-8')), addr)
-    except socket.error:
-        print(f'Sorry, {socket.error}')
-    finally:
-        sock.close()
+        print(data)
+        decode_data = data.decode('utf-8')
+        cesar_data = encrypt_func(decode_data)
+        sock.sendto((bytes(cesar_data, encoding='utf-8')), addr)
 
 
 if __name__ == '__main__':
