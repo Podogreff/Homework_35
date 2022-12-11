@@ -3,17 +3,12 @@ import socket
 HOST = "127.0.0.1"
 PORT = 11111
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind((HOST, PORT))
-
 
 # Cesar function
-def encypt_func(txt):
+def encrypt_func(txt):
     result = ""
-
     for i in range(len(txt)):
         char = txt[i]
-
         if char.isupper():
             result += chr((ord(char) - 61) % 26 + 65)
         else:
@@ -21,10 +16,21 @@ def encypt_func(txt):
     return result
 
 
-while True:
-    data, addr = sock.recvfrom(4096)
-    print(data)
-    decode_data = data.decode('utf-8')
-    cesar_data = encypt_func(decode_data)
-    encode_data = cesar_data.encode('utf-8')
-    sock.sendto(encode_data, addr)
+def udp_server(host=HOST, port=PORT):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind((host, port))
+    try:
+        data, addr = sock.recvfrom(4096)
+        if data:
+            print(data)
+            decode_data = data.decode('utf-8')
+            cesar_data = encrypt_func(decode_data)
+            sock.sendto((bytes(cesar_data, encoding='utf-8')), addr)
+    except socket.error:
+        print(f'Sorry, {socket.error}')
+    finally:
+        sock.close()
+
+
+if __name__ == '__main__':
+    udp_server()
